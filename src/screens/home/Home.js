@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import ReactDOM from 'react-dom';
 import Header from "../../common/header/Header.js";
 import "./Home.css";
 import { withStyles } from '@material-ui/core/styles';
@@ -22,6 +23,7 @@ import Button from '@material-ui/core/Button';
 import genre from "../../common/genre";
 import artists from "../../common/artists";
 import genres from '../../common/genre';
+import Details from '../details/Details.js';
 
 const styles = theme => ({
   root: {
@@ -93,11 +95,17 @@ class Home extends Component {
     }
     
     movieClickHandler = (movieId) => {
-      this.props.history.push('/movie/' + movieId);
+        ReactDOM.render(<Details movieId={movieId} />, document.getElementById('root'));
     }
      
   render() {
     const { classes } = this.props;
+    var filterMovie=moviesData.filter((movie)=>{
+        return(movie.title=== this.state.movieName ||this.state.artists.includes( (movie.artists[0].first_name+" "+movie.artists[0].last_name)))
+    })
+    if(this.state.movieName.length ==0  && this.state.artists.length == 0){
+        filterMovie=moviesData;
+      }
     return (
       <div>
         <Header baseUrl={this.props.baseU} />
@@ -121,8 +129,8 @@ class Home extends Component {
         <div className="flex-container">
             <div className="left">
             <GridList cellHeight={350} cols={4} className={classes.gridListMain}>
-              {moviesData.map((movie) => (
-                <GridListTile className="released-movie-grid-item"
+              {filterMovie.map((movie) => (
+                <GridListTile  onClick={() => this.movieClickHandler(movie.id)} className="released-movie-grid-item"
                   key={"grid" + movie.id}
                 >
                   <img
